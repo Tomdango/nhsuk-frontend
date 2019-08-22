@@ -3,7 +3,7 @@ import accessibleAutocomplete from 'accessible-autocomplete';
 /**
  @typedef autocompleteConfig
  @type {Object}
- Option param for NHS UK functionality
+ Option param for NHSUK functionality
  @property {string=} formId ID of form element containing autocomplete.
  Required params for accessible-autocomplete
  @property {string} inputId ID of the input field.
@@ -11,7 +11,7 @@ import accessibleAutocomplete from 'accessible-autocomplete';
  @property {function} source Function called on input change
  */
 
-/** Class representing an autocomplete. */
+/** Class representing NHSUK autocomplete. */
 export default class AutoComplete {
   /**
    * Create an autocomplete.
