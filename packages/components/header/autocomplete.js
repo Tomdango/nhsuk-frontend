@@ -1,6 +1,22 @@
 import accessibleAutocomplete from 'accessible-autocomplete';
 
+/**
+ @typedef autocompleteConfig
+ @type {Object}
+ Option param for NHS UK functionality
+ @property {string=} formId ID of form element containing autocomplete.
+ Required params for accessible-autocomplete
+ @property {string} inputId ID of the input field.
+ @property {string} containerId ID of element in which the autocomplete will be rendered in.
+ @property {function} source Function called on input change
+ */
+
+/** Class representing an autocomplete. */
 export default class AutoComplete {
+  /**
+   * Create an autocomplete.
+   * @param {autocompleteConfig} config 
+  */
   constructor(config) {
     this.formId = config.formId;
     this.inputId = config.inputId;
@@ -9,17 +25,18 @@ export default class AutoComplete {
     this.form = document.getElementById(this.formId);
     this.input = document.getElementById(this.inputId);
     this.container = document.getElementById(this.containerId);
-    
-    // Add autocomplete functionality if input element exists
-    if (this.input) {
+
+    // Add autocomplete functionality if required config options exist
+    if (this.input && this.container && config.source) {
       this.initAutoComplete(config);
       // If form element exists then add events to add standard form functionality
       if (this.form) this.addFormEvents();
     }
   }
   
-  // Enter key default is prevented for the input but autoComplete plugin so 
-  // add that functionality back in to offer expected behaviour
+  /**
+   * Adds event to catch enter presses when the main input is focused and submits the form
+  */
   addFormEvents() {
     window.addEventListener("load", () => {
       // Attach event to form as the original input element is cloned by autoComplete plugin
@@ -30,8 +47,11 @@ export default class AutoComplete {
     });
   }
 
+  /**
+   * Initialise an using NHS default config and any additional config properties passed.
+   * @param {autocompleteConfig} config 
+   */
   initAutoComplete(config) {
-    // Default config which will be overwritten by any passed config
     const defaultConfig = {
       element: this.container,
       id: this.inputId,
@@ -44,7 +64,7 @@ export default class AutoComplete {
     // Remove original search input as it will be replaced by accessibleAutocomplete
     this.input.parentNode.removeChild(this.input);
 
-    // Initialise the accessibleAutocomplete with merged config
+    // Initialise accessibleAutocomplete
     accessibleAutocomplete({
       ...defaultConfig,
       ...config,

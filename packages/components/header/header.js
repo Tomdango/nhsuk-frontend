@@ -83,8 +83,12 @@ function handleMenuToggle() {
   }
 }
 
-// Return HTML for each result 
-function suggestionTemplate(result) {
+/**
+   * Function to build truncated result with svg for search autocomplete
+   * @param {string} result String containing individual result from autocomplete source function 
+   * @returns {string} String of HTML containing passed result
+  */
+function suggestion(result) {
   const truncateLength = 36;
   const dots = result.length > truncateLength ? '...' : '';
   const resultTruncated = result.substring(0, truncateLength) + dots;
@@ -96,12 +100,18 @@ function suggestionTemplate(result) {
   `;
 }
 
-// Ajax request to funnelback api for search results, returns callback
-function getResults(query, populateResults) {
+/**
+   * Function to populate the search autocomplete.
+   * @param {string} query Query to pass to search API 
+   * @param {function} populateResults Callback function passed to source by autocomplete plugin
+  */
+function source(query, populateResults) {
+  // Build URL for search endpoint
   const rootUrl = 'https://nhs.funnelback.co.uk/s/suggest.json';
   const maxResults = 10;
   const fullUrl = `${rootUrl}?collection=nhs-meta&partial_query=${query}&sort=0&fmt=json++&profile=&show=${maxResults}`;
 
+  // Async request for results based on query param
   const xhr = new XMLHttpRequest();
   xhr.open('GET', fullUrl);
   xhr.onload = () => {
@@ -110,6 +120,7 @@ function getResults(query, populateResults) {
       const results = JSON.parse(xhr.responseText)
         .map(({ disp }) => disp);
 
+      // Fire callback from autoComplete plugin
       populateResults(results);
     }
     // No message required for error... fails silently to standard form
@@ -118,7 +129,6 @@ function getResults(query, populateResults) {
 }
 
 /* Header */
-
 function nhsuk_header() { /* eslint-disable-line camelcase */
   handleSearchToggle();
   handleMenuToggle();
@@ -126,11 +136,10 @@ function nhsuk_header() { /* eslint-disable-line camelcase */
     formId: 'search',
     inputId: 'search-field',
     containerId: 'autocomplete-container',
-    onConfirm: query => window.open(`https://www.nhs.uk/search?collection=nhs-meta&query=${query}`, '_self'),
-    source: getResults,
+    source,
     templates: {
-      suggestion: suggestionTemplate,
-    },
+      suggestion,
+    }
   });
 }
 
